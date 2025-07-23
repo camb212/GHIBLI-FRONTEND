@@ -1,50 +1,54 @@
-// Catalog page
-import { useEffect, useState, useContext } from 'react';
-import ProductCard from '../components/ProductCard';
-import api from '../api/api';
-import { AuthContext } from '../contexts/AuthContext';
+import React from 'react';
 
-export default function Catalog() {
-  const [products, setProducts] = useState([] as any[]);
-  const { token } = useContext(AuthContext);
+const products = [
+  {
+    id: 1,
+    name: 'Totoro Gigante',
+    price: 29.99,
+    image: '/images/totoro.jpg',
+  },
+  {
+    id: 2,
+    name: 'Calcifer Almohada',
+    price: 24.99,
+    image: '/images/calcifer.jpg',
+  },
+  {
+    id: 3,
+    name: 'Jiji Peluche',
+    price: 19.99,
+    image: '/images/jiji.jpg',
+  },
+  {
+    id: 4,
+    name: 'Bola de Hollín',
+    price: 9.99,
+    image: '/images/hollin.jpg',
+  },
+];
 
-  useEffect(() => {
-    api.get('/plushies')
-      .then(res => setProducts(res.data))
-      .catch(err => console.error(err));
-  }, []);
-
-  const handleAddToCart = async (id: string) => {
-    if (!token) {
-      alert('Debes iniciar sesión para agregar al carrito');
-      return;
-    }
-    await api.post(`/cart/1`, { plushieId: id }); // ⚡ Usa el ID real del usuario
-    alert('Agregado al carrito');
-  };
-
-  const handleAddToWishlist = async (id: string) => {
-    if (!token) {
-      alert('Debes iniciar sesión para agregar a wishlist');
-      return;
-    }
-    await api.post(`/wishlist/1`, { plushieId: id });
-    alert('Agregado a wishlist');
-  };
-
+const Catalog: React.FC = () => {
   return (
-    <div className="p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-      {products.map(p => (
-        <ProductCard
-          key={p._id}
-          name={p.name}
-          price={p.price}
-          description={p.description}
-          image={p.image}
-          onAddToCart={() => handleAddToCart(p._id)}
-          onAddToWishlist={() => handleAddToWishlist(p._id)}
-        />
-      ))}
+    <div className="p-6">
+      <h1 className="text-3xl font-bold mb-6 text-center">Catálogo de Productos</h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {products.map((product) => (
+          <div key={product.id} className="card bg-base-100 shadow-xl">
+            <figure>
+              <img src={product.image} alt={product.name} className="h-48 w-full object-cover" />
+            </figure>
+            <div className="card-body">
+              <h2 className="card-title">{product.name}</h2>
+              <p>${product.price.toFixed(2)}</p>
+              <div className="card-actions justify-end">
+                <button className="btn btn-primary">Agregar al carrito</button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
-}
+};
+
+export default Catalog;

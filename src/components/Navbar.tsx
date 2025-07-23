@@ -1,36 +1,37 @@
-// Navbar component code here
-import { Link, useNavigate } from 'react-router-dom';
-import { useContext } from 'react';
-import { AuthContext } from '../contexts/AuthContext';
+import React from 'react';
+import { Link } from 'react-router-dom';
 
-export default function Navbar() {
-  const { token, logout } = useContext(AuthContext);
-  const navigate = useNavigate();
+interface NavbarProps {
+  toggleTheme: () => void;
+  theme: string;
+}
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
-
+const Navbar: React.FC<NavbarProps> = ({ toggleTheme, theme }) => {
   return (
-    <div className="navbar bg-base-100 shadow-md">
+    <div className="navbar bg-base-100 px-6 shadow-md">
       <div className="flex-1">
-        <Link to="/" className="btn btn-ghost normal-case text-xl">Ghibli Plushies</Link>
+        <Link to="/" className="btn btn-ghost text-xl">
+          🌸 Mundo Ginlin
+        </Link>
       </div>
-      <div className="flex-none">
-        <Link to="/catalog" className="btn btn-ghost">Catálogo</Link>
-        <Link to="/cart" className="btn btn-ghost">Carrito</Link>
-        <Link to="/wishlist" className="btn btn-ghost">Wishlist</Link>
-        <Link to="/orders" className="btn btn-ghost">Pedidos</Link>
-        {token ? (
-          <button onClick={handleLogout} className="btn btn-outline ml-2">Cerrar sesión</button>
-        ) : (
-          <>
-            <Link to="/login" className="btn btn-outline ml-2">Login</Link>
-            <Link to="/register" className="btn btn-outline ml-2">Registro</Link>
-          </>
-        )}
+
+      <div className="flex-none gap-2">
+        <ul className="menu menu-horizontal px-1">
+          <li><Link to="/Catalog">Catálogo</Link></li>
+          <li><Link to="/tienda-fisica">Tienda Física</Link></li>
+          <li><Link to="/cart">Carrito</Link></li>
+          <li><Link to="/wishlist">Wishlist</Link></li>
+          <li><Link to="/orders">Órdenes</Link></li>
+          <li><Link to="/login">Ingresar</Link></li>
+          <li><Link to="/register">Registrarse</Link></li>
+        </ul>
+
+        <button className="btn btn-sm btn-outline ml-2" onClick={toggleTheme}>
+          Tema: {theme === 'claro' ? '🌿 Forest' : '☀️ Claro'}
+        </button>
       </div>
     </div>
   );
-}
+};
+
+export default Navbar;

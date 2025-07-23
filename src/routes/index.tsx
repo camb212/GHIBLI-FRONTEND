@@ -1,26 +1,27 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Navbar from '../components/Navbar';
-import Home from '../pages/Home';
-import Catalog from '../pages/Catalog';
-import Cart from '../pages/Cart';
-import Wishlist from '../pages/Wishlist';
-import Orders from '../pages/Orders';
-import Login from '../pages/Login';
-import Register from '../pages/Register';
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
 
-export default function AppRoutes() {
-  return (
-    <BrowserRouter>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/catalog" element={<Catalog />} />
-        <Route path="/cart" element={<Cart />} />
-        <Route path="/wishlist" element={<Wishlist />} />
-        <Route path="/orders" element={<Orders />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-      </Routes>
-    </BrowserRouter>
-  );
+interface AppRoutesProps {
+  toggleTheme: () => void;
+  theme: string;
 }
+
+const Home = ({ theme }: { theme: string }) => (
+  <div>
+    <h1>Home Page</h1>
+    <p>Tema actual: {theme}</p>
+  </div>
+);
+
+const AppRoutes = ({ toggleTheme, theme }: AppRoutesProps) => {
+  return (
+    <>
+      <button onClick={toggleTheme}>Cambiar tema</button>
+      <Routes>
+        <Route path="/" element={<Home theme={theme} />} />
+      </Routes>
+    </>
+  );
+};
+
+export default AppRoutes;

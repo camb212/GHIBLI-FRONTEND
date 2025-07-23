@@ -1,30 +1,28 @@
-// App root
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Home from './pages/Home';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import Catalog from './pages/Catalog';
-import Cart from './pages/Cart';
-import Orders from './pages/Orders';
-import Wishlist from './pages/Wishlist';
+import React, { useState, useEffect } from 'react';
+import AppRoutes from './routes';
 import Navbar from './components/Navbar';
+import './App.css'
 
-function App() {
+
+const App = () => {
+  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'claro');
+
+  const toggleTheme = () => {
+    const nuevoTema = theme === 'claro' ? 'forest' : 'claro';
+    setTheme(nuevoTema);
+    localStorage.setItem('theme', nuevoTema);
+  };
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
+
   return (
-    <Router>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/catalog" element={<Catalog />} />
-        <Route path="/cart" element={<Cart />} />
-        <Route path="/orders" element={<Orders />} />
-        <Route path="/wishlist" element={<Wishlist />} />
-      </Routes>
-    </Router>
+    <div className="min-h-screen bg-base-100 text-base-content">
+      <Navbar toggleTheme={toggleTheme} theme={theme} />
+      <AppRoutes toggleTheme={toggleTheme} theme={theme} />
+    </div>
   );
-}
+};
 
 export default App;
