@@ -20,7 +20,6 @@ import Wishlist from '../pages/Wishlist';
 import Cart from '../pages/Cart';
 import Login from '../pages/Login';
 import Register from '../pages/Register';
-import Orders  from '../pages/Orders';
 import TiendaFisica from '../pages/TiendaFisica';
 
 const AppRoutes = ({ toggleTheme, theme }: AppRoutesProps) => {
@@ -33,7 +32,6 @@ const AppRoutes = ({ toggleTheme, theme }: AppRoutesProps) => {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} /> 
       <Route path="/tienda-fisica" element={<TiendaFisica />} />
-      <Route path="/orders" element={<Orders />} />
     </Routes>
   );
 };

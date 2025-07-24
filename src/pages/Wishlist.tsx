@@ -15,33 +15,40 @@ interface Wishlist {
   items: PlushieItem[];
 }
 
+const characters = [
+  { img: "/imagenes/totoro.webp", name: "Totoro" },
+  { img: "/imagenes/calsifer.jpg", name: "Calcifer" },
+  { img: "/imagenes/haku.jpg", name: "Haku" },
+  { img: "/imagenes/noface.webp", name: "Sin Cara" },
+  { img: "/imagenes/gatobus.jpg", name: "Gatobus" },
+  { img: "/imagenes/gato.avif", name: "Barón" },
+];
+
+// Actualiza la lista de peluches disponibles con tus imágenes y nombres, agregando precios
+const availablePlushies: PlushieItem[] = characters.map((char, index) => ({
+  id: `plush${index + 1}`,
+  name: char.name,
+  price: `$${(20 + index * 5).toFixed(2)}`, // ejemplo de precios variables
+  image: char.img,
+}));
+
 const WishlistComponent = () => {
   const [wishlist, setWishlist] = useState<Wishlist>({ userId: '', items: [] });
   const [userId] = useState<string>('user123'); // ID de usuario simulado
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [message, setMessage] = useState<string>('');
   
-  // Datos de peluches simulados para agregar
-  const availablePlushies: PlushieItem[] = [
-    { id: 'plush1', name: 'Osito Teddy', price: '$25.99', image: '🧸' },
-    { id: 'plush2', name: 'Unicornio Mágico', price: '$35.50', image: '🦄' },
-    { id: 'plush3', name: 'Gatito Peludo', price: '$28.00', image: '🐱' },
-    { id: 'plush4', name: 'Conejito Suave', price: '$22.75', image: '🐰' },
-    { id: 'plush5', name: 'Pingüino Adorable', price: '$30.25', image: '🐧' }
-  ];
-
   // Simular llamada al backend para obtener wishlist
   const fetchWishlist = async (): Promise<void> => {
     setIsLoading(true);
     try {
-      // Simulamos respuesta del backend
       setTimeout(() => {
         const mockWishlist: Wishlist = {
           userId: userId,
           items: [
-            { id: 'plush1', name: 'Osito Teddy', price: '$25.99', image: '🧸', addedDate: '2024-01-15' },
-            { id: 'plush3', name: 'Gatito Peludo', price: '$28.00', image: '🐱', addedDate: '2024-01-20' }
-          ]
+            { ...availablePlushies[0], addedDate: '2024-01-15' }, // Totoro
+            { ...availablePlushies[5], addedDate: '2024-01-20' }, // Barón
+          ],
         };
         setWishlist(mockWishlist);
         setIsLoading(false);
@@ -56,7 +63,6 @@ const WishlistComponent = () => {
   const addToWishlist = async (plushieId: string): Promise<void> => {
     setIsLoading(true);
     try {
-      // Simulamos POST a /wishlist
       const plushie = availablePlushies.find(p => p.id === plushieId);
       if (!plushie) {
         setMessage('Peluche no encontrado');
@@ -67,18 +73,17 @@ const WishlistComponent = () => {
       setTimeout(() => {
         const newItem: PlushieItem = {
           ...plushie,
-          addedDate: new Date().toISOString().split('T')[0]
+          addedDate: new Date().toISOString().split('T')[0],
         };
         
         setWishlist(prev => ({
           ...prev,
-          items: [...prev.items, newItem]
+          items: [...prev.items, newItem],
         }));
         
         setMessage(`¡${plushie.name} agregado a tu lista de deseos!`);
         setIsLoading(false);
         
-        // Limpiar mensaje después de 3 segundos
         setTimeout(() => setMessage(''), 3000);
       }, 800);
     } catch (error) {
@@ -87,11 +92,11 @@ const WishlistComponent = () => {
     }
   };
 
-  // Función para simular eliminación (no existe en backend original)
+  // Función para eliminar peluche de la lista
   const removeFromWishlist = (plushieId: string): void => {
     setWishlist(prev => ({
       ...prev,
-      items: prev.items.filter(item => item.id !== plushieId)
+      items: prev.items.filter(item => item.id !== plushieId),
     }));
     setMessage('Peluche eliminado de la lista de deseos');
     setTimeout(() => setMessage(''), 3000);
@@ -106,7 +111,7 @@ const WishlistComponent = () => {
   };
 
   return (
-<div className="min-h-screen bg-gradient-to-br from-[#e0fff4] to-[#b3fcd9] p-6">
+    <div className="min-h-screen bg-gradient-to-br from-[#e0fff4] to-[#b3fcd9] p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
@@ -149,8 +154,15 @@ const WishlistComponent = () => {
             ) : (
               <div className="space-y-4">
                 {wishlist.items.map((item) => (
-                  <div key={item.id} className="flex items-center gap-4 p-4 bg-crusoe-50 rounded-xl border border-crusoe-200 hover:shadow-md transition-shadow">
-                    <div className="text-4xl">{item.image}</div>
+                  <div
+                    key={item.id}
+                    className="flex items-center gap-4 p-4 bg-crusoe-50 rounded-xl border border-crusoe-200 hover:shadow-md transition-shadow"
+                  >
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="w-16 h-16 object-contain rounded-lg"
+                    />
                     <div className="flex-1">
                       <h3 className="font-semibold text-crusoe-800">{item.name}</h3>
                       <p className="text-crusoe-600 font-medium">{item.price}</p>
@@ -178,8 +190,15 @@ const WishlistComponent = () => {
             
             <div className="space-y-4">
               {availablePlushies.map((plushie) => (
-                <div key={plushie.id} className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl border border-gray-200 hover:shadow-md transition-shadow">
-                  <div className="text-4xl">{plushie.image}</div>
+                <div
+                  key={plushie.id}
+                  className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl border border-gray-200 hover:shadow-md transition-shadow"
+                >
+                  <img
+                    src={plushie.image}
+                    alt={plushie.name}
+                    className="w-16 h-16 object-contain rounded-lg"
+                  />
                   <div className="flex-1">
                     <h3 className="font-semibold text-crusoe-800">{plushie.name}</h3>
                     <p className="text-crusoe-600 font-medium">{plushie.price}</p>

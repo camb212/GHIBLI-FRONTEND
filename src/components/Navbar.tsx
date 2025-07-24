@@ -11,7 +11,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleTheme, theme }) => {
     <div className="navbar bg-base-100 px-6 shadow-md">
       <div className="flex-1">
         <Link to="/" className="btn btn-ghost text-xl">
-          🌸 Mundo Ginlin
+          🌸 Mundo Ghibli
         </Link>
       </div>
 
@@ -21,7 +21,6 @@ const Navbar: React.FC<NavbarProps> = ({ toggleTheme, theme }) => {
           <li><Link to="/tienda-fisica">Tienda Física</Link></li>
           <li><Link to="/cart">Carrito</Link></li>
           <li><Link to="/wishlist">Wishlist</Link></li>
-          <li><Link to="/orders">Órdenes</Link></li>
           <li><Link to="/login">Ingresar</Link></li>
           <li><Link to="/register">Registrarse</Link></li>
         </ul>

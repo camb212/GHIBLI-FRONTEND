@@ -1,119 +1,60 @@
-// src/components/ProductCard.tsx
+// src/pages/Cart.tsx
 import React from 'react';
-import { Heart, HeartOff, Eye } from 'lucide-react';
 
-interface ProductCardProps {
-  id: string;
-  image: string;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  isOnSale?: boolean;
-  rating?: number;
-  reviewCount?: number;
-  category?: string;
-  isFavorite?: boolean;
-  isInStock?: boolean;
-  onAddToCart?: (id: string) => void;
-  onToggleFavorite?: (id: string) => void;
-  onQuickView?: (id: string) => void;
-}
+const Cart = () => {
+  // Datos quemados del carrito
+  const cartItems = [
+    {
+      id: '1',
+      name: 'Totoro Gigante',
+      price: 29.99,
+      quantity: 2,
+      image: '/imagenes/totoro.webp',
+    },
+    {
+      id: '2',
+      name: 'Calcifer Mágico',
+      price: 24.99,
+      quantity: 1,
+      image: '/imagenes/calsifer.jpg',
+    },
+  ];
 
-const ProductCard: React.FC<ProductCardProps> = ({
-  id,
-  image,
-  name,
-  price,
-  originalPrice,
-  isOnSale,
-  rating,
-  reviewCount,
-  category,
-  isFavorite,
-  isInStock = true,
-  onAddToCart,
-  onToggleFavorite,
-  onQuickView,
-}) => {
+  const totalPrice = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
   return (
-    <div className="relative bg-white dark:bg-neutral-900 rounded-2xl shadow-lg border border-green-200 dark:border-green-800 overflow-hidden transform hover:scale-105 transition-transform duration-300">
-      {/* Etiqueta de oferta */}
-      {isOnSale && (
-        <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
-          Oferta
-        </div>
-      )}
-
-      {/* Botón de favoritos */}
-      {onToggleFavorite && (
-        <button
-          onClick={() => onToggleFavorite(id)}
-          className="absolute top-2 right-2 p-1 rounded-full bg-white dark:bg-neutral-800 shadow hover:scale-110 transition"
-        >
-          {isFavorite ? (
-            <Heart className="text-red-500 w-5 h-5" fill="red" />
-          ) : (
-            <HeartOff className="text-gray-500 w-5 h-5" />
-          )}
-        </button>
-      )}
-
-      {/* Imagen */}
-      <img
-        src={image}
-        alt={name}
-        className="w-full h-64 object-cover hover:scale-110 transition-transform duration-500"
-      />
-
-      {/* Contenido */}
-      <div className="p-4 space-y-2">
-        <h3 className="text-lg font-bold text-green-800 dark:text-green-400">{name}</h3>
-
-        {category && (
-          <p className="text-xs text-gray-400 uppercase tracking-wide">{category}</p>
-        )}
-
-        {/* Precio */}
-        <div className="flex items-center space-x-2">
-          <span className="text-green-800 dark:text-green-400 font-bold text-md">
-            ${price.toFixed(2)}
-          </span>
-          {isOnSale && originalPrice && (
-            <span className="line-through text-sm text-gray-400">
-              ${originalPrice.toFixed(2)}
-            </span>
-          )}
-        </div>
-
-        {/* Valoración */}
-        {rating && reviewCount && (
-          <div className="text-sm text-yellow-600 dark:text-yellow-400">
-            ⭐ {rating.toFixed(1)} ({reviewCount})
+    <div className="max-w-4xl mx-auto p-6">
+      <h1 className="text-3xl font-bold mb-6">Tu Carrito</h1>
+      {cartItems.length === 0 ? (
+        <p>Tu carrito está vacío</p>
+      ) : (
+        <>
+          <ul className="space-y-4">
+            {cartItems.map(item => (
+              <li key={item.id} className="flex items-center gap-4 border p-4 rounded-lg">
+                <img src={item.image} alt={item.name} className="w-20 h-20 object-contain rounded" />
+                <div className="flex-1">
+                  <h2 className="font-semibold text-lg">{item.name}</h2>
+                  <p>Cantidad: {item.quantity}</p>
+                  <p>Precio unitario: ${item.price.toFixed(2)}</p>
+                </div>
+                <div className="font-bold text-green-700">${(item.price * item.quantity).toFixed(2)}</div>
+              </li>
+            ))}
+          </ul>
+          <div className="mt-6 text-right text-xl font-bold">
+            Total: ${totalPrice.toFixed(2)}
           </div>
-        )}
-
-        {/* Botones */}
-        <div className="flex flex-col gap-2 mt-2">
           <button
-            onClick={() => onAddToCart?.(id)}
-            className="bg-green-700 text-white py-2 rounded-xl hover:bg-green-600 transition"
-            disabled={!isInStock}
+            className="mt-4 px-6 py-3 bg-green-700 text-white rounded-lg hover:bg-green-600 transition"
+            onClick={() => alert('Checkout no implementado')}
           >
-            {isInStock ? 'Añadir al carrito' : 'Agotado'}
+            Pagar Ahora
           </button>
-          {onQuickView && (
-            <button
-              onClick={() => onQuickView(id)}
-              className="flex justify-center items-center gap-1 text-sm text-green-600 dark:text-green-300 hover:underline"
-            >
-              <Eye className="w-4 h-4" />
-              Vista rápida
-            </button>
-          )}
-        </div>
-      </div>
+        </>
+      )}
     </div>
   );
 };
 
-export default ProductCard;
+export default Cart;
