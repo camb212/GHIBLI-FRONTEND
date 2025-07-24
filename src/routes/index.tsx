@@ -1,4 +1,3 @@
-import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 
 interface AppRoutesProps {
@@ -28,7 +27,7 @@ const AppRoutes = ({ toggleTheme, theme }: AppRoutesProps) => {
       <Route path="/" element={<Home theme={theme} toggleTheme={toggleTheme} />} />
       <Route path="/catalog" element={<Catalog />} />
       <Route path="/wishlist" element={<Wishlist />} />
-      <Route path="/cart" element={<Cart id={''} image={''} name={''} price={0} />} />
+      <Route path="/cart" element={<Cart />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} /> 
       <Route path="/tienda-fisica" element={<TiendaFisica />} />

@@ -7,17 +7,16 @@ import Login from './pages/Login';
 import TiendaFisica from './pages/TiendaFisica';
 import Catalog from './pages/Catalog';
 interface AppRoutesProps {
-  toggleTheme: () => void;
   theme: string;
 }
 
-export default function AppRoutes({ toggleTheme, theme }: AppRoutesProps) {
+export default function AppRoutes({ theme }: AppRoutesProps) {
   return (
     <Routes>
-      <Route path="/" element={<Home toggleTheme={toggleTheme} theme={theme} />} />
+      <Route path="/" element={<Home theme={theme} />} />
       <Route path="/Catalog" element={<Catalog />} />
       <Route path="/wishlist" element={<Wishlist />} />
-      <Route path="/cart" element={<Cart id={''} image={''} name={''} price={0} />} />
+      <Route path="/cart" element={<Cart />} />
       <Route path="/login" element={<Login />} />
       <Route path="/tienda-fisica" element={<TiendaFisica />} />
     </Routes>

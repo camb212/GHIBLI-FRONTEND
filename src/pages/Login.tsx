@@ -3,7 +3,7 @@ import { Eye, EyeOff, Mail, Lock, Loader2 } from 'lucide-react';
 
 const LoginForm = () => {
   const [formData, setFormData] = useState({
-    email: '',
+    correo: '', // antes era email o username
     password: ''
   });
   const [showPassword, setShowPassword] = useState(false);
@@ -18,8 +18,8 @@ const LoginForm = () => {
     setError('');
 
     try {
-      // Simulación de llamada a API
-      const response = await fetch('/auth/login', {
+      // Llamada real a la API
+      const response = await fetch('http://localhost:3010/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -32,19 +32,13 @@ const LoginForm = () => {
       }
 
       const data = await response.json();
-      
-      // En un entorno real, usarías localStorage aquí
-      // localStorage.setItem('access_token', data.access_token);
-      
-      // Simulación de éxito
+      // Guardar el token y el usuario en localStorage
+      localStorage.setItem('access_token', data.access_token);
+      localStorage.setItem('user', JSON.stringify(data.user));
       setSuccess(true);
-      
-      // Simulación de redirección
       setTimeout(() => {
-        // useRouter().push('/dashboard');
-        console.log('Redirigiendo al dashboard...', data);
+        window.location.href = '/tienda-fisica';
       }, 1500);
-
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al iniciar sesión');
     } finally {
@@ -93,7 +87,7 @@ const LoginForm = () => {
           <div className="space-y-6">
             {/* Email Input */}
             <div className="space-y-2">
-              <label htmlFor="email" className="block text-sm font-medium text-green-800">
+              <label htmlFor="correo" className="block text-sm font-medium text-green-800">
                 Correo Electrónico
               </label>
               <div className="relative">
@@ -101,14 +95,14 @@ const LoginForm = () => {
                   <Mail className="h-5 w-5 text-green-400" />
                 </div>
                 <input
-                  id="email"
-                  name="email"
+                  id="correo"
+                  name="correo"
                   type="email"
                   required
-                  value={formData.email}
+                  value={formData.correo}
                   onChange={handleInputChange}
                   className="block w-full pl-10 pr-3 py-3 border border-green-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 bg-green-50/50"
-                  placeholder="tu@email.com"
+                  placeholder="tu_correo@ejemplo.com"
                 />
               </div>
             </div>
@@ -153,7 +147,7 @@ const LoginForm = () => {
             <button
               type="button"
               onClick={handleLogin}
-              disabled={isLoading || !formData.email || !formData.password}
+              disabled={isLoading || !formData.correo || !formData.password}
               className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white py-3 px-4 rounded-lg font-medium hover:from-green-700 hover:to-green-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
             >
               {isLoading ? (
@@ -173,7 +167,7 @@ const LoginForm = () => {
               <a href="#" className="text-green-600 hover:text-green-700 font-medium transition-colors">
                 ¿Olvidaste tu contraseña?
               </a>
-              <a href="#" className="text-green-600 hover:text-green-700 font-medium transition-colors">
+              <a href="/register" className="text-green-600 hover:text-green-700 font-medium transition-colors">
                 Crear cuenta
               </a>
             </div>

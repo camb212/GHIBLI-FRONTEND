@@ -1,5 +1,4 @@
 // src/pages/Cart.tsx
-import React from 'react';
 
 const Cart = () => {
   // Datos quemados del carrito

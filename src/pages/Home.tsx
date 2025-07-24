@@ -1,11 +1,8 @@
-import React from 'react';
-
 interface HomeProps {
-  toggleTheme: () => void;
   theme: string; // "cupcake" o "forest"
 }
 
-const Home = ({ toggleTheme, theme }: HomeProps) => {
+const Home = ({ theme }: HomeProps) => {
   const darkMode = theme === 'forest';
 
   const featuredProducts = [

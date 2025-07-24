@@ -3,14 +3,18 @@ import { Eye, EyeOff, User, Mail, Lock, CheckCircle, AlertCircle } from 'lucide-
 
 // Interfaces para tipado
 interface FormData {
-  name: string;
-  email: string;
+  nombre: string;
+  correo: string;
+  celular: string;
+  username: string;
   password: string;
 }
 
 interface FormErrors {
-  name?: string;
-  email?: string;
+  nombre?: string;
+  correo?: string;
+  celular?: string;
+  username?: string;
   password?: string;
 }
 
@@ -30,8 +34,10 @@ interface RegisterResponse {
 
 const RegisterForm: React.FC = () => {
   const [formData, setFormData] = useState<FormData>({
-    name: '',
-    email: '',
+    nombre: '',
+    correo: '',
+    celular: '',
+    username: '',
     password: ''
   });
   
@@ -49,16 +55,24 @@ const RegisterForm: React.FC = () => {
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
     
-    if (!formData.name.trim()) {
-      newErrors.name = 'El nombre es requerido';
-    } else if (formData.name.trim().length < 2) {
-      newErrors.name = 'El nombre debe tener al menos 2 caracteres';
+    if (!formData.nombre.trim()) {
+      newErrors.nombre = 'El nombre es requerido';
     }
     
-    if (!formData.email) {
-      newErrors.email = 'El email es requerido';
-    } else if (!isValidEmail(formData.email)) {
-      newErrors.email = 'Por favor ingresa un email válido';
+    if (!formData.correo) {
+      newErrors.correo = 'El correo es requerido';
+    } else if (!isValidEmail(formData.correo)) {
+      newErrors.correo = 'Por favor ingresa un correo válido';
+    }
+    
+    if (!formData.celular) {
+      newErrors.celular = 'El celular es requerido';
+    } else if (!/^\d{10,}$/.test(formData.celular)) {
+      newErrors.celular = 'El celular debe tener al menos 10 dígitos';
+    }
+    
+    if (!formData.username.trim()) {
+      newErrors.username = 'El nombre de usuario es requerido';
     }
     
     if (!formData.password) {
@@ -89,25 +103,17 @@ const RegisterForm: React.FC = () => {
   };
 
   // Función de registro (simula API call)
-  const registerUser = async (userData: FormData): Promise<RegisterResponse> => {
-    // Simulamos una llamada a la API
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        // Simular diferentes respuestas
-        if (userData.email === 'test@error.com') {
-          reject(new Error('Este email ya está registrado'));
-        } else {
-          resolve({
-            success: true,
-            user: {
-              id: Date.now(),
-              name: userData.name,
-              email: userData.email
-            }
-          });
-        }
-      }, 1500);
+  const registerUser = async (userData: FormData): Promise<any> => {
+    const response = await fetch('http://localhost:3010/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(userData),
     });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Error al registrar usuario');
+    }
+    return await response.json();
   };
 
   // Manejar envío del formulario
@@ -126,7 +132,7 @@ const RegisterForm: React.FC = () => {
       
       setMessage({
         type: 'success',
-        text: '¡Registro exitoso! Bienvenido ' + formData.name
+        text: '¡Registro exitoso! Bienvenido ' + formData.nombre
       });
       
       // Simular redirección después de 2 segundos
@@ -163,58 +169,98 @@ const RegisterForm: React.FC = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Input Nombre */}
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-green-900 mb-2">
+              <label htmlFor="nombre" className="block text-sm font-medium text-green-900 mb-2">
                 Nombre completo
               </label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-green-500 w-5 h-5" />
                 <input
                   type="text"
-                  id="name"
-                  name="name"
-                  value={formData.name}
+                  id="nombre"
+                  name="nombre"
+                  value={formData.nombre}
                   onChange={handleInputChange}
-                  className={`w-full pl-10 pr-4 py-3 border-2 rounded-lg focus:outline-none transition-colors ${
-                    errors.name 
-                      ? 'border-red-400 focus:border-red-500' 
-                      : 'border-green-200 focus:border-green-500'
-                  }`}
+                  className={`w-full pl-10 pr-4 py-3 border-2 rounded-lg focus:outline-none transition-colors ${errors.nombre ? 'border-red-400 focus:border-red-500' : 'border-green-200 focus:border-green-500'}`}
                   placeholder="Tu nombre completo"
                 />
               </div>
-              {errors.name && (
+              {errors.nombre && (
                 <p className="text-red-500 text-sm mt-1 flex items-center">
                   <AlertCircle className="w-4 h-4 mr-1" />
-                  {errors.name}
+                  {errors.nombre}
                 </p>
               )}
             </div>
 
-            {/* Input Email */}
+            {/* Input Correo */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-green-900 mb-2">
+              <label htmlFor="correo" className="block text-sm font-medium text-green-900 mb-2">
                 Correo electrónico
               </label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-green-500 w-5 h-5" />
                 <input
                   type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
+                  id="correo"
+                  name="correo"
+                  value={formData.correo}
                   onChange={handleInputChange}
-                  className={`w-full pl-10 pr-4 py-3 border-2 rounded-lg focus:outline-none transition-colors ${
-                    errors.email 
-                      ? 'border-red-400 focus:border-red-500' 
-                      : 'border-green-200 focus:border-green-500'
-                  }`}
-                  placeholder="tu@email.com"
+                  className={`w-full pl-10 pr-4 py-3 border-2 rounded-lg focus:outline-none transition-colors ${errors.correo ? 'border-red-400 focus:border-red-500' : 'border-green-200 focus:border-green-500'}`}
+                  placeholder="tu@correo.com"
                 />
               </div>
-              {errors.email && (
+              {errors.correo && (
                 <p className="text-red-500 text-sm mt-1 flex items-center">
                   <AlertCircle className="w-4 h-4 mr-1" />
-                  {errors.email}
+                  {errors.correo}
+                </p>
+              )}
+            </div>
+
+            {/* Input Celular */}
+            <div>
+              <label htmlFor="celular" className="block text-sm font-medium text-green-900 mb-2">
+                Celular
+              </label>
+              <div className="relative">
+                <input
+                  type="tel"
+                  id="celular"
+                  name="celular"
+                  value={formData.celular}
+                  onChange={handleInputChange}
+                  className={`w-full pl-10 pr-4 py-3 border-2 rounded-lg focus:outline-none transition-colors ${errors.celular ? 'border-red-400 focus:border-red-500' : 'border-green-200 focus:border-green-500'}`}
+                  placeholder="5551234567"
+                />
+              </div>
+              {errors.celular && (
+                <p className="text-red-500 text-sm mt-1 flex items-center">
+                  <AlertCircle className="w-4 h-4 mr-1" />
+                  {errors.celular}
+                </p>
+              )}
+            </div>
+
+            {/* Input Username */}
+            <div>
+              <label htmlFor="username" className="block text-sm font-medium text-green-900 mb-2">
+                Nombre de usuario
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  id="username"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleInputChange}
+                  className={`w-full pl-10 pr-4 py-3 border-2 rounded-lg focus:outline-none transition-colors ${errors.username ? 'border-red-400 focus:border-red-500' : 'border-green-200 focus:border-green-500'}`}
+                  placeholder="satsuki"
+                />
+              </div>
+              {errors.username && (
+                <p className="text-red-500 text-sm mt-1 flex items-center">
+                  <AlertCircle className="w-4 h-4 mr-1" />
+                  {errors.username}
                 </p>
               )}
             </div>
@@ -232,11 +278,7 @@ const RegisterForm: React.FC = () => {
                   name="password"
                   value={formData.password}
                   onChange={handleInputChange}
-                  className={`w-full pl-10 pr-12 py-3 border-2 rounded-lg focus:outline-none transition-colors ${
-                    errors.password 
-                      ? 'border-red-400 focus:border-red-500' 
-                      : 'border-green-200 focus:border-green-500'
-                  }`}
+                  className={`w-full pl-10 pr-12 py-3 border-2 rounded-lg focus:outline-none transition-colors ${errors.password ? 'border-red-400 focus:border-red-500' : 'border-green-200 focus:border-green-500'}`}
                   placeholder="Tu contraseña"
                 />
                 <button
@@ -296,13 +338,14 @@ const RegisterForm: React.FC = () => {
           <div className="mt-6 text-center">
             <p className="text-green-700">
               ¿Ya tienes cuenta?{' '}
-              <button 
+              <a 
+                href="/login" 
                 type="button"
                 className="text-green-600 hover:text-green-800 font-semibold underline"
                 onClick={() => console.log('Navegar a login')}
               >
                 Iniciar sesión
-              </button>
+              </a>
             </p>
           </div>
         </div>
