@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Heart, X, Plus, Star, Gift } from 'lucide-react';
 
-// Interfaces para TypeScript
 interface PlushieItem {
   id: string;
   name: string;
@@ -24,91 +23,97 @@ const characters = [
   { img: "/imagenes/gato.avif", name: "Barón" },
 ];
 
-// Actualiza la lista de peluches disponibles con tus imágenes y nombres, agregando precios
 const availablePlushies: PlushieItem[] = characters.map((char, index) => ({
   id: `plush${index + 1}`,
   name: char.name,
-  price: `$${(20 + index * 5).toFixed(2)}`, // ejemplo de precios variables
+  price: `$${(20 + index * 5).toFixed(2)}`,
   image: char.img,
 }));
 
+const BACKEND_URL = "https://ghibli-peluches-backend.onrender.com";
+
 const WishlistComponent = () => {
   const [wishlist, setWishlist] = useState<Wishlist>({ userId: '', items: [] });
-  const [userId] = useState<string>('user123'); // ID de usuario simulado
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [message, setMessage] = useState<string>('');
-  
-  // Simular llamada al backend para obtener wishlist
-  const fetchWishlist = async (): Promise<void> => {
+  const [userId] = useState<string>('user123');
+  const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState('');
+
+  // Obtener wishlist desde backend
+  const fetchWishlist = async () => {
     setIsLoading(true);
     try {
-      setTimeout(() => {
-        const mockWishlist: Wishlist = {
-          userId: userId,
-          items: [
-            { ...availablePlushies[0], addedDate: '2024-01-15' }, // Totoro
-            { ...availablePlushies[5], addedDate: '2024-01-20' }, // Barón
-          ],
-        };
-        setWishlist(mockWishlist);
-        setIsLoading(false);
-      }, 1000);
+      const response = await fetch(`${BACKEND_URL}/wishlist/${userId}`);
+      if (!response.ok) throw new Error('Error al cargar wishlist');
+      const data = await response.json();
+
+      const items = data.items
+        .map((item: { plushieId: string }) => {
+          const plushie = availablePlushies.find(p => p.id === item.plushieId);
+          return plushie ? { ...plushie, addedDate: undefined } : null;
+        })
+        .filter(Boolean) as PlushieItem[];
+
+      setWishlist({ userId: data.userId, items });
     } catch (error) {
       setMessage('Error al cargar la lista de deseos');
+    } finally {
       setIsLoading(false);
     }
   };
 
-  // Simular llamada al backend para agregar peluche
-  const addToWishlist = async (plushieId: string): Promise<void> => {
+  // Agregar peluche con logs para debug
+  const addToWishlist = async (plushieId: string) => {
+    if (isLoading) return;
     setIsLoading(true);
     try {
-      const plushie = availablePlushies.find(p => p.id === plushieId);
-      if (!plushie) {
-        setMessage('Peluche no encontrado');
-        setIsLoading(false);
-        return;
-      }
-      
-      setTimeout(() => {
-        const newItem: PlushieItem = {
-          ...plushie,
-          addedDate: new Date().toISOString().split('T')[0],
-        };
-        
-        setWishlist(prev => ({
-          ...prev,
-          items: [...prev.items, newItem],
-        }));
-        
-        setMessage(`¡${plushie.name} agregado a tu lista de deseos!`);
-        setIsLoading(false);
-        
-        setTimeout(() => setMessage(''), 3000);
-      }, 800);
+      const res = await fetch(`${BACKEND_URL}/wishlist/${userId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plushieId }),
+      });
+
+      console.log('Response status:', res.status);
+      const text = await res.text();
+      console.log('Response body:', text);
+
+      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+
+      await fetchWishlist();
+      setMessage('¡Peluche agregado a tu lista de deseos!');
+      setTimeout(() => setMessage(''), 3000);
     } catch (error) {
-      setMessage('Error al agregar el peluche');
+      console.error('Error en addToWishlist:', error);
+      setMessage('Error al agregar peluche');
+    } finally {
       setIsLoading(false);
     }
   };
 
-  // Función para eliminar peluche de la lista
-  const removeFromWishlist = (plushieId: string): void => {
-    setWishlist(prev => ({
-      ...prev,
-      items: prev.items.filter(item => item.id !== plushieId),
-    }));
-    setMessage('Peluche eliminado de la lista de deseos');
-    setTimeout(() => setMessage(''), 3000);
+  // Eliminar peluche de wishlist en backend
+  const removeFromWishlist = async (plushieId: string) => {
+    if (isLoading) return;
+    setIsLoading(true);
+    try {
+      const response = await fetch(`${BACKEND_URL}/wishlist/${userId}/${plushieId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) throw new Error('Error al eliminar peluche');
+      await fetchWishlist();
+      setMessage('Peluche eliminado de la lista de deseos');
+      setTimeout(() => setMessage(''), 3000);
+    } catch (error) {
+      setMessage('Error al eliminar el peluche');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
     fetchWishlist();
   }, []);
 
-  const isInWishlist = (plushieId: string): boolean => {
-    return wishlist.items.some(item => item.id === plushieId);
-  };
+  const isInWishlist = (plushieId: string) =>
+    wishlist.items.some(item => item.id === plushieId);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#e0fff4] to-[#b3fcd9] p-6">
@@ -144,7 +149,7 @@ const WishlistComponent = () => {
               <Star className="text-crusoe-500 w-6 h-6" />
               Mis Peluches Deseados ({wishlist.items.length})
             </h2>
-            
+
             {wishlist.items.length === 0 ? (
               <div className="text-center py-12">
                 <Heart className="mx-auto w-16 h-16 text-crusoe-300 mb-4" />
@@ -153,7 +158,7 @@ const WishlistComponent = () => {
               </div>
             ) : (
               <div className="space-y-4">
-                {wishlist.items.map((item) => (
+                {wishlist.items.map(item => (
                   <div
                     key={item.id}
                     className="flex items-center gap-4 p-4 bg-crusoe-50 rounded-xl border border-crusoe-200 hover:shadow-md transition-shadow"
@@ -166,7 +171,7 @@ const WishlistComponent = () => {
                     <div className="flex-1">
                       <h3 className="font-semibold text-crusoe-800">{item.name}</h3>
                       <p className="text-crusoe-600 font-medium">{item.price}</p>
-                      <p className="text-crusoe-400 text-sm">Agregado: {item.addedDate}</p>
+                      <p className="text-crusoe-400 text-sm">Agregado: {item.addedDate || '—'}</p>
                     </div>
                     <button
                       onClick={() => removeFromWishlist(item.id)}
@@ -187,9 +192,9 @@ const WishlistComponent = () => {
               <Plus className="text-crusoe-500 w-6 h-6" />
               Agregar Peluches
             </h2>
-            
+
             <div className="space-y-4">
-              {availablePlushies.map((plushie) => (
+              {availablePlushies.map(plushie => (
                 <div
                   key={plushie.id}
                   className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl border border-gray-200 hover:shadow-md transition-shadow"
