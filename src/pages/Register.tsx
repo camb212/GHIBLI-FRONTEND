@@ -23,14 +23,7 @@ interface Message {
   text: string;
 }
 
-interface RegisterResponse {
-  success: boolean;
-  user: {
-    id: number;
-    name: string;
-    email: string;
-  };
-}
+
 
 const RegisterForm: React.FC = () => {
   const [formData, setFormData] = useState<FormData>({
