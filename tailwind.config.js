@@ -1,14 +1,13 @@
-/** @type {import('tailwindcss').Config} */
+// tailwind.config.js
 module.exports = {
   content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
+    "./src/**/*.{js,jsx,ts,tsx}", // Ajusta según tu estructura
   ],
   theme: {
     extend: {},
   },
-  plugins: [require("daisyui")], // si vas a usar daisyui
+  plugins: [require("daisyui")],
   daisyui: {
-    themes: ["claro", "forest"], // personaliza si deseas
+    themes: ["light", "dark", "synthwave"],
   },
 };
