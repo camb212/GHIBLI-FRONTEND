@@ -1,6 +1,9 @@
 {
-  "buildCommand": "rm -rf node_modules && npm install && npm run build",
-  "outputDirectory": "dist",
-  "framework": "vite",
-  "installCommand": "npm install"
+  "functions": {
+    "pages/api/**/*.js": {
+      "runtime": "nodejs18.x"
+    }
+  },
+  "buildCommand": "npm install",
+  "outputDirectory": "dist"
 }
