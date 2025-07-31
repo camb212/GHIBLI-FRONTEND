@@ -1,9 +1,4 @@
 {
-  "functions": {
-    "pages/api/**/*.js": {
-      "runtime": "nodejs18.x"
-    }
-  },
-  "buildCommand": "npm install",
+  "buildCommand": "npm install && npm run build",
   "outputDirectory": "dist"
 }
