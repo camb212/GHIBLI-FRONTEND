@@ -63,7 +63,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleTheme, theme }) => {
           </div>
         )}
         <button className="btn btn-sm btn-outline ml-2" onClick={toggleTheme}>
-          Tema: {theme === 'claro' ? '🌿 Forest' : '☀️ Claro'}
+          Tema: {theme === 'dark' ? 'light' : '☀️ Claro'}
         </button>
       </div>
     </div>
